@@ -5,21 +5,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.nio.file.Path;
 import java.sql.SQLException;
+
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -176,8 +170,12 @@ public class GetGradeTable extends JPanel {
 	
 	ActionListener listen_csvExport = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			//exportToCSV(table_score, "C:\\Users\\HoSeong Lee\\CSV_Export.csv");
-			exportToCSV(table_score, "C:\\Users\\HoSeong Lee\\Desktop\\CSV_Export.csv");
+			JFileChooser chooser = new JFileChooser();
+			int returnVal = chooser.showSaveDialog(null);
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				String path = chooser.getSelectedFile().getAbsolutePath();
+				exportToCSV(table_score, path + ".csv");
+			}
 		}
 	};
 	ActionListener listen_changeGrade = new ActionListener() {
