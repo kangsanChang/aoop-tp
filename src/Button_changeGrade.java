@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -12,11 +13,12 @@ import javax.swing.JTextField;
 
 public class Button_changeGrade extends JFrame {
 	DB_function local_DB = null;
-			
+	int[] gradeRatioArray = null;
+	JTable table_changeGrade;
+	
 	public Button_changeGrade(DB_function DB) throws SQLException {
 		local_DB = DB;
-		
-		int gradeRatioArray[] = local_DB.get_gradeRatioArray();
+		gradeRatioArray = local_DB.get_gradeRatioArray();
 		
 		String title[] = {"A+", "A", "B+", "B", "C+", "C", "D", "F"};
 		String data[][] = {
@@ -31,7 +33,7 @@ public class Button_changeGrade extends JFrame {
 					Integer.toString(gradeRatioArray[7]),
 				}
 			};
-		JTable table_changeGrade = new JTable(data, title);
+		table_changeGrade = new JTable(data, title);
 		JScrollPane sp = new JScrollPane(table_changeGrade);
 		this.add(sp, BorderLayout.CENTER);
 		
@@ -50,7 +52,24 @@ public class Button_changeGrade extends JFrame {
 	
 	ActionListener listen_save = new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			
+			int sum = 0;
+			int[] setData = new int[8];
+			for(int i=0; i<8; i++) {
+				setData[i] = Integer.parseInt( (String) table_changeGrade.getValueAt(0, i));
+				sum += setData[i];
+			}
+			if(sum != 100) {
+				JOptionPane.showMessageDialog(null, "총 합이 100 이 되어야 합니다 !!");
+			} else {
+				try {
+					local_DB.update_gradeArray(setData);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("등급 비율의 합 : " + sum);
+				GetGradeTable.repaintTable();
+			}
 		}
 	};
 }

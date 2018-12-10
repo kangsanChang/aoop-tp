@@ -19,13 +19,13 @@ public class GradeCalculationApplication extends JFrame{
 		JPanel statistic = new JPanel();
 		at = new AttendanceTable();
 		it = new InputScoreTable();
-//		gt = new GetGradeTable();
+		gt = new GetGradeTable();
 		st = new StatisticTable();
 		
 		// panel 한글 체크
 		attendance.add(at);
 		inputScore.add(it);
-//		getGrade.add(gt);
+		getGrade.add(gt);
 		statistic.add(st);
 		
 		tab.addTab("Attend", attendance);
