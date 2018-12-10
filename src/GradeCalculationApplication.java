@@ -28,14 +28,14 @@ public class GradeCalculationApplication extends JFrame{
 		getGrade.add(gt);
 		statistic.add(st);
 		
-		tab.addTab("Attend", attendance);
-		tab.addTab("Input", inputScore);
-		tab.addTab("Grade", getGrade);
-		tab.addTab("Static", statistic);
+		tab.addTab("출석", attendance);
+		tab.addTab("성적 입력", inputScore);
+		tab.addTab("성적 계산", getGrade);
+		tab.addTab("통계", statistic);
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(tab);
-		setTitle("project");
+		setTitle("Grade Calculation Application");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setSize(1200, 800);
