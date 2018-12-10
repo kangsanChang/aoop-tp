@@ -50,7 +50,7 @@ public class StatisticTable extends JPanel {
 		add(cp, BorderLayout.CENTER);
 	}
 
-	private void refreshChart() {
+	public void refreshChart() {
 		cp.removeAll();
 		cp.revalidate();
 		chart = getChart(chartTitle, chartData);
@@ -69,16 +69,10 @@ public class StatisticTable extends JPanel {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		switch (option) {
 		case 0:
-			dataset.addValue(3, "score", "0-10");
-			dataset.addValue(5, "score", "11-20");
-			dataset.addValue(6, "score", "21-30");
-			dataset.addValue(8, "score", "31-40");
-			dataset.addValue(10, "score", "41-50");
-			dataset.addValue(12, "score", "51-60");
-			dataset.addValue(4, "score", "61-70");
-			dataset.addValue(2, "score", "71-80");
-			dataset.addValue(3, "score", "81-90");
-			dataset.addValue(1, "score", "91-100");
+			chartTitle += " (평균 :"+DB_function.cal_scoreAverage()+"점)";
+			int[] totalResult = DB_function.count_stuScoreArea();
+			for(int i=0 ; i<totalResult.length ; i++)
+				dataset.addValue(totalResult[i], "score", scoreGap[i]);
 			break;
 		case 1:
 			int[] attendResult = q.getAttendanceStatisticInfo();

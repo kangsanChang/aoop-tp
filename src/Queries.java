@@ -116,9 +116,7 @@ public class Queries {
 			resultSet = getStatisticInfo.executeQuery();
 			while(resultSet.next()) {
 				for(int i=1; i<17 ; i++) {
-					System.out.println(resultSet.getString("week"+i).getClass().getName());
 					if(resultSet.getString("week"+i).equals("출석")) {
-						System.out.println("find !!");
 						attendCounter++;
 					}
 				}

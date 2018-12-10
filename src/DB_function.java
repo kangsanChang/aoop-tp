@@ -11,6 +11,10 @@ public class DB_function {
 	PreparedStatement pstmt = null;
 	String sql = "";
 	
+	static int[] totalScoreArray;
+	static int row;
+	
+	
 	// -------------------- DB get ------------------
 	/* in all array : attScore[], ratioArray[], maxArray[]....
 	 * each data of Array's elements is
@@ -98,6 +102,29 @@ public class DB_function {
 		return attScore;
 	}
 	
+	public static double cal_scoreAverage() {
+	      int sum = 0;
+	      for(int i = 0; i < row; i++) {
+	         sum += totalScoreArray[i];
+	      }
+	      //float average = Math.round((((float)sum/row)*100)/100.0);
+	      double average = (double)sum/row;
+	      //System.out.println(Math.round((average*100) / 100.0));
+	      System.out.println(average);
+	      return average;
+	   }
+	
+	public static int[] count_stuScoreArea() {
+		int[] countArray = new int[10];
+		for(int i = 0; i < 10; i++) {
+			for(int c = 0; c < row; c++ ) {
+				if(i*10 < totalScoreArray[c] && totalScoreArray[c] <= (i+1)*10) {
+					countArray[i]++;
+				}
+			}
+		}
+		return countArray;
+	}
 	public Object[][] get_allScore(int row, int[] attScore, int[] ratioArray, int[] maxArray) throws SQLException {
 		// DB get score
 		sql = ("SELECT st.name, sc.mid_exam, sc.final_exam, sc.hw, sc.quiz, sc.announcement, sc.report, sc.etc, st.stukey FROM student st, score sc WHERE st.stukey = sc.stukey;");
@@ -105,13 +132,15 @@ public class DB_function {
 		ResultSet rs = pstmt.executeQuery();
 		String data[][] = new String[row][];
 		int[] Score = new int[8];
-		int[] totalScoreArray = new int[row];
+		//int[] totalScoreArray = new int[row];							
+		totalScoreArray = new int[row];									
+		this.row = row;													
 		int totalScore = 0;
 
 		int[] stukey = new int[row];	// update grade
 		
 		// make Array of total Score
-		int n = 0;			// int for while loop
+		int n = 0;
 		
 		n = 0;
 		// make Array for return
@@ -156,6 +185,7 @@ public class DB_function {
 			data[a][11] = grade;
 			update_stuGrade(stukey[a], grade);
 		}
+		this.count_stuScoreArea();
 		return data;
 	}
 	
@@ -183,6 +213,7 @@ public class DB_function {
 		for(int i=0; i<8; i++) {
 			pstmt.setInt(i+1, setData[i]);
 		}
+		pstmt.executeUpdate();
 	}
 	
 	public static Connection makeConnection() {

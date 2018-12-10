@@ -8,7 +8,6 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.file.Path;
 import java.sql.SQLException;
 
 import javax.swing.JButton;
@@ -67,7 +66,8 @@ public class GetGradeTable extends JPanel {
 		controlButton.add(btn_changePercent);
 		controlButton.add(btn_csvExport);
 		//controlButton.add(btn_test);
-		
+		JLabel search_msg = new JLabel("이름 검색 : ");
+		controlSearch.add(search_msg);
 		controlSearch.add(field_search);	
 		controlPanel.add(controlSearch, BorderLayout.WEST);
 		controlPanel.add(controlButton, BorderLayout.EAST);
@@ -78,7 +78,7 @@ public class GetGradeTable extends JPanel {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-        
+        sp.setPreferredSize(new Dimension(1000,600));
 	    this.add(sp, BorderLayout.CENTER);
         
         this.setVisible(true);
@@ -130,10 +130,13 @@ public class GetGradeTable extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        // ----------------------------------------------------
-        //table_score = new JTable(data, title);
 	
-        model = new DefaultTableModel(data, title);
+        model = new DefaultTableModel(data, title) {
+        	@Override
+        	public boolean isCellEditable(int row, int column) {
+        		return false;
+        	}
+        };
         
         table_score.setModel(model);
         
