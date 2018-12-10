@@ -34,6 +34,8 @@ public class InputScoreTable extends JPanel{
 		Queries q = new Queries();
 		results = q.getAllScores();
 		
+		JPanel topPanel = new JPanel(new BorderLayout());
+		
 		// create panels
 		JPanel controlPanel = new JPanel();
 		
@@ -68,15 +70,17 @@ public class InputScoreTable extends JPanel{
 			if (e.getSource() == savebtn) {
 				q.updateScore(updateQueryList);
 				System.out.println("update 완료");
+				GetGradeTable.repaintTable();
 			}
 		});
 		
-		controlPanel.add(title);
 		controlPanel.add(csvbtn);
 		controlPanel.add(savebtn);
+		topPanel.add(title, BorderLayout.WEST);
+		topPanel.add(controlPanel, BorderLayout.EAST);
 		
 		// add components
-		add(controlPanel, BorderLayout.NORTH);
+		add(topPanel, BorderLayout.NORTH);
 		
 		// create table
 		JTable table = new JTable(model);
