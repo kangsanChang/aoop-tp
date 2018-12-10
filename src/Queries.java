@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,6 +20,8 @@ public class Queries {
 	private PreparedStatement getAllScores = null;
 	private PreparedStatement updateScore = null;
 	private PreparedStatement updateScoreRow = null;
+	
+	private PreparedStatement getStatisticInfo = null;
 
 	public Queries() {
 		try {
@@ -30,6 +34,7 @@ public class Queries {
 					"select stukey,name,week1,week2,week3,week4,week5,week6,week7,week8,week9,week10,week11,week12,week13,week14,week15,week16 from attendance natural join student;");
 			getAllScores = connection.prepareStatement(
 					"select stukey, name, mid_exam, final_exam, hw, quiz, announcement, report, etc from score natural join student;");
+			getStatisticInfo = connection.prepareStatement("select * from score natural join attendance;");
 		} catch (SQLException sqlException) {
 			sqlException.printStackTrace();
 			System.exit(1);
@@ -101,6 +106,69 @@ public class Queries {
 				sqlException.printStackTrace();
 			}
 		}
+	}
+
+	public int[] getAttendanceStatisticInfo() {
+		ResultSet resultSet = null;
+		int attendCounter = 0;
+		int[] attendances = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		try {
+			resultSet = getStatisticInfo.executeQuery();
+			while(resultSet.next()) {
+				for(int i=1; i<17 ; i++) {
+					System.out.println(resultSet.getString("week"+i).getClass().getName());
+					if(resultSet.getString("week"+i).equals("출석")) {
+						System.out.println("find !!");
+						attendCounter++;
+					}
+				}
+				attendances[attendCounter-1]++;
+				attendCounter = 0;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				resultSet.close();
+			} catch (SQLException sqlException) {
+				sqlException.printStackTrace();
+				close();
+			}
+		}
+		return attendances;
+	}
+	
+	public int[] getScoreStatisticInfo(String option) {
+		ResultSet resultSet = null;
+		int[] midScores = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		int[] finalScores = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+		try {
+			resultSet = getStatisticInfo.executeQuery();
+			while(resultSet.next()) {
+				if(resultSet.getInt("mid_exam")%10 == 0)
+					midScores[(resultSet.getInt("mid_exam")/10) - 1]++;
+				else
+					midScores[(resultSet.getInt("mid_exam")/10)]++;
+				
+				if(resultSet.getInt("final_exam")%10 == 0)
+					finalScores[(resultSet.getInt("final_exam")/10) - 1]++;
+				else
+					finalScores[(resultSet.getInt("final_exam")/10)]++;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				resultSet.close();
+			} catch (SQLException sqlException) {
+				sqlException.printStackTrace();
+				close();
+			}
+		}
+		if(option == "중간고사")
+			return midScores;
+		else
+			return finalScores; 
 	}
 	
 	public void updateScoreRow(Score score) {
