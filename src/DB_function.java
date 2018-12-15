@@ -107,10 +107,7 @@ public class DB_function {
 	      for(int i = 0; i < row; i++) {
 	         sum += totalScoreArray[i];
 	      }
-	      //float average = Math.round((((float)sum/row)*100)/100.0);
 	      double average = (double)sum/row;
-	      //System.out.println(Math.round((average*100) / 100.0));
-	      System.out.println(average);
 	      return average;
 	   }
 	

@@ -1,23 +1,18 @@
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
-
 public class StatisticTable extends JPanel {
 
 	String[] conditions = { "총점", "출석", "중간고사", "기말고사" };
 	String[] scoreGap = { "0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100" };
+	String[] attendGap = { "1회", "2회", "3회", "4회", "5회", "6회", "7회", "8회", "9회", "10회", "11회", "12회", "13회", "14회", "15회", "16회"};
 	String chartTitle = conditions[0];
-	DefaultCategoryDataset chartData = getDataSet(0);
-	JFreeChart chart = getChart(chartTitle, chartData);
-	ChartPanel cp = new ChartPanel(chart);
+	HistogramPanel chart = getChart(scoreGap, getDataSet(0));
 	Queries q = new Queries();
 
 	public StatisticTable() {
@@ -25,7 +20,7 @@ public class StatisticTable extends JPanel {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		JPanel conditionBox = new JPanel();
 
-		JLabel title = new JLabel("성적 통계");
+		JLabel title = new JLabel("성적 통계 (총점 평균 : "+DB_function.cal_scoreAverage()+" )");
 		title.setFont(getFont().deriveFont(25.0f));
 
 		JLabel condition_msg = new JLabel("조건 선택");
@@ -38,62 +33,46 @@ public class StatisticTable extends JPanel {
 			JComboBox cb = (JComboBox) e.getSource();
 			int option = cb.getSelectedIndex();
 			chartTitle = conditions[option];
-			chartData = getDataSet(option);
-			refreshChart();
+			this.remove(chart);
+			chart = (option==1) ? getChart(attendGap, getDataSet(option)) : getChart(scoreGap, getDataSet(option));
+			chart.setPreferredSize(new Dimension(800, 600));
+			add(chart, BorderLayout.CENTER);
+			chart.revalidate();
+			this.repaint();
 		});
 
 		topPanel.add(title, BorderLayout.WEST);
 		topPanel.add(conditionBox, BorderLayout.EAST);
 		add(topPanel, BorderLayout.NORTH);
-
-		cp.setPreferredSize(new Dimension(800, 600));
-		add(cp, BorderLayout.CENTER);
+        
+		chart.setPreferredSize(new Dimension(800, 600));
+		add(chart, BorderLayout.CENTER);
+	}
+	
+	private HistogramPanel getChart(String[] gap, int[] values) {
+		HistogramPanel hp = new HistogramPanel();
+    	for(int i=0 ; i<gap.length ; i++)
+    		hp.addHistogramColumn(gap[i], values[i], Color.BLUE);
+    	hp.layoutHistogram();
+    	return hp;
 	}
 
-	public void refreshChart() {
-		cp.removeAll();
-		cp.revalidate();
-		chart = getChart(chartTitle, chartData);
-		chart.removeLegend();
-		ChartPanel chartPanel = new ChartPanel(chart);
-		cp.setLayout(new BorderLayout());
-		cp.add(chartPanel);
-		cp.repaint();
-	}
-
-	public JFreeChart getChart(String title, DefaultCategoryDataset dataset) {
-		return ChartFactory.createBarChart(title, "점수", "인원 수", dataset);
-	}
-
-	private DefaultCategoryDataset getDataSet(int option) {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	private int[] getDataSet(int option) {
 		switch (option) {
 		case 0:
-			chartTitle += " (평균 :"+DB_function.cal_scoreAverage()+"점)";
-			int[] totalResult = DB_function.count_stuScoreArea();
-			for(int i=0 ; i<totalResult.length ; i++)
-				dataset.addValue(totalResult[i], "score", scoreGap[i]);
-			break;
+			// total
+			return DB_function.count_stuScoreArea();
 		case 1:
-			int[] attendResult = q.getAttendanceStatisticInfo();
-			for(int i=0; i<attendResult.length ; i++) {
-				dataset.addValue(attendResult[i], "attendance", (i+1)+"회");
-			}
-			break;
+			// attendance
+			return q.getAttendanceStatisticInfo();
 		case 2:
-			int[] midResult = q.getScoreStatisticInfo(conditions[2]);
-			for(int i=0; i<midResult.length ; i++) {
-				dataset.addValue(midResult[i], "score", scoreGap[i]);
-			}
-			break;
+			// mid
+			return q.getScoreStatisticInfo(conditions[2]);
 		case 3:
-			int[] finalResult = q.getScoreStatisticInfo(conditions[3]);
-			for(int i=0; i<finalResult.length ; i++) {
-				dataset.addValue(finalResult[i], "score", scoreGap[i]);
-			}
-			break;
+			// final
+			return q.getScoreStatisticInfo(conditions[3]);
+		default:
+			return null;
 		}
-
-		return dataset;
 	}
 }
