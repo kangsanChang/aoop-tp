@@ -143,15 +143,17 @@ public class Queries {
 		try {
 			resultSet = getStatisticInfo.executeQuery();
 			while(resultSet.next()) {
-				if(resultSet.getInt("mid_exam")%10 == 0)
-					midScores[(resultSet.getInt("mid_exam")/10) - 1]++;
+				int midscore = resultSet.getInt("mid_exam");
+				int finalscore = resultSet.getInt("final_exam");
+				if((midscore!=0) && (midscore%10==0))
+					midScores[(midscore/10) - 1]++;
 				else
-					midScores[(resultSet.getInt("mid_exam")/10)]++;
+					midScores[(midscore/10)]++;
 				
-				if(resultSet.getInt("final_exam")%10 == 0)
-					finalScores[(resultSet.getInt("final_exam")/10) - 1]++;
+				if((finalscore!=0) && (finalscore%10 == 0))
+					finalScores[(finalscore/10) - 1]++;
 				else
-					finalScores[(resultSet.getInt("final_exam")/10)]++;
+					finalScores[(finalscore/10)]++;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

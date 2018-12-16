@@ -11,8 +11,9 @@ public class StatisticTable extends JPanel {
 	String[] conditions = { "총점", "출석", "중간고사", "기말고사" };
 	String[] scoreGap = { "0-10", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "71-80", "81-90", "91-100" };
 	String[] attendGap = { "1회", "2회", "3회", "4회", "5회", "6회", "7회", "8회", "9회", "10회", "11회", "12회", "13회", "14회", "15회", "16회"};
-	String chartTitle = conditions[0];
+	double totalAvg = DB_function.cal_scoreAverage();
 	HistogramPanel chart = getChart(scoreGap, getDataSet(0));
+	
 	Queries q = new Queries();
 
 	public StatisticTable() {
@@ -20,7 +21,7 @@ public class StatisticTable extends JPanel {
 		JPanel topPanel = new JPanel(new BorderLayout());
 		JPanel conditionBox = new JPanel();
 
-		JLabel title = new JLabel("성적 통계 (총점 평균 : "+DB_function.cal_scoreAverage()+" )");
+		JLabel title = new JLabel("성적 통계 (총점 평균 : "+totalAvg+" )");
 		title.setFont(getFont().deriveFont(25.0f));
 
 		JLabel condition_msg = new JLabel("조건 선택");
@@ -32,13 +33,7 @@ public class StatisticTable extends JPanel {
 		box.addActionListener(e -> {
 			JComboBox cb = (JComboBox) e.getSource();
 			int option = cb.getSelectedIndex();
-			chartTitle = conditions[option];
-			this.remove(chart);
-			chart = (option==1) ? getChart(attendGap, getDataSet(option)) : getChart(scoreGap, getDataSet(option));
-			chart.setPreferredSize(new Dimension(800, 600));
-			add(chart, BorderLayout.CENTER);
-			chart.revalidate();
-			this.repaint();
+			refreshTable(option);
 		});
 
 		topPanel.add(title, BorderLayout.WEST);
@@ -47,6 +42,15 @@ public class StatisticTable extends JPanel {
         
 		chart.setPreferredSize(new Dimension(800, 600));
 		add(chart, BorderLayout.CENTER);
+	}
+	
+	public void refreshTable(int option) {		
+		this.remove(chart);
+		chart = (option==1) ? getChart(attendGap, getDataSet(option)) : getChart(scoreGap, getDataSet(option));
+		chart.setPreferredSize(new Dimension(800, 600));
+		add(chart, BorderLayout.CENTER);
+		chart.revalidate();
+		this.repaint();
 	}
 	
 	private HistogramPanel getChart(String[] gap, int[] values) {

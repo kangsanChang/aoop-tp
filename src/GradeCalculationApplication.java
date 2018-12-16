@@ -3,6 +3,8 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class GradeCalculationApplication extends JFrame{
 	JTabbedPane tab;
@@ -32,6 +34,15 @@ public class GradeCalculationApplication extends JFrame{
 		tab.addTab("성적 입력", inputScore);
 		tab.addTab("성적 계산", getGrade);
 		tab.addTab("통계", statistic);
+		
+		tab.addChangeListener(e -> {
+			if(e.getSource() instanceof JTabbedPane) {		
+				JTabbedPane tp = (JTabbedPane)e.getSource();
+				if(tp.getSelectedIndex() == 3) {
+					st.refreshTable(0);
+				}
+			}
+		});
 		
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(tab);
